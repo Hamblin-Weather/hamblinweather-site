@@ -26,8 +26,8 @@ jobs:
         with:
           node-version: 24
         env:
-          SITE_URL: https://${{ github.repository_owner }}.github.io
-          SITE_BASE: /${{ github.event.repository.name }}
+          SITE_URL: https://hamblinweather.com
+          SITE_BASE: /
           ASTRO_TELEMETRY_DISABLED: '1'
 
   deploy:
