@@ -1,0 +1,6 @@
+---
+import { counties } from '../lib/counties';
+const { blank = '', selected } = Astro.props;
+---
+{blank && <option value="">{blank}</option>}
+{counties.map((county) => <option value={county.slug} selected={county.slug === selected}>{county.name} County</option>)}

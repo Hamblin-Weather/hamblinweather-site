@@ -1,0 +1,76 @@
+---
+import coverage from '../data/hero-coverage.geo.json';
+import { counties } from '../lib/counties';
+import { path } from '../lib/paths';
+
+interface Props { decorative?: boolean }
+const { decorative = false } = Astro.props;
+const landId = decorative ? 'station-coverage-land' : 'hero-coverage-land';
+
+if (coverage.crs.properties.name !== 'urn:ogc:def:crs:EPSG::4269') {
+  throw new Error('The hero outline must use NAD83 geographic coordinates.');
+}
+const point = ([lon, lat]: number[]) => [(lon + 90.32) * 190 + 10, (36.52 - lat) * 196 + 10];
+const shapes = coverage.features.map(({ geometry, properties }) => {
+  const county = counties.find(({ fips }) => fips === properties.fips);
+  if (!county) throw new Error('Unrecognized hero county ID: ' + properties.fips);
+  const polygons = (geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates) as number[][][][];
+  const d = polygons.flatMap((polygon) => polygon.map((ring) =>
+    'M' + ring.map((xy) => point(xy).map((value) => value.toFixed(1)).join(',')).join('L') + 'Z',
+  )).join('');
+  return { d, county };
+});
+if (shapes.length !== counties.length || new Set(shapes.map(({ county }) => county.fips)).size !== counties.length) {
+  throw new Error('The hero map must contain one shape per forecast county.');
+}
+---
+<svg class={decorative ? 'coverage-display' : 'coverage-svg'} viewBox={decorative ? '0 0 465 320' : '0 0 465 362'}
+  role={decorative ? undefined : 'group'} aria-label={decorative ? undefined : 'West Tennessee county forecasts'} aria-hidden={decorative ? 'true' : undefined}>
+  <defs>
+    <linearGradient id={landId} x1="0" y1="1" x2="1" y2="0">
+      <stop stop-color={decorative ? '#193d7b' : '#4772e4'}/><stop offset="1" stop-color={decorative ? '#66a8ea' : '#8ba2fc'}/>
+    </linearGradient>
+  </defs>
+  {decorative ? (
+    <g fill={`url(#${landId})`}>
+      {shapes.map(({ d, county }) => <path d={d} data-county={county.fips}/>)}
+    </g>
+  ) : shapes.map(({ d, county }) => (
+    <a href={path('forecast/' + county.slug + '/')} class="coverage-county" aria-label={county.name + ' County forecast'}>
+      <path d={d} data-county={county.fips}/>
+      <g class="coverage-label" aria-hidden="true">
+        <rect x="84" y="320" width="297" height="35" rx="8"/>
+        <text x="232.5" y="344" text-anchor="middle">{county.name} County</text>
+      </g>
+    </a>
+  ))}
+</svg>
+
+<style>
+  .coverage-display { display: block; width: 100%; max-height: 100%; filter: drop-shadow(0 0 9px #6bbdff70); }
+  .coverage-display path { fill-opacity: .58; fill-rule: evenodd; stroke: #a2d8ff; stroke-width: 1.5; stroke-linejoin: round; }
+  .coverage-county path {
+    fill: url(#hero-coverage-land);
+    fill-opacity: .46;
+    fill-rule: evenodd;
+    stroke: #dce5ffd4;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+  }
+  .coverage-county:focus-visible { outline: none; }
+  .coverage-county:focus-visible path {
+    fill: #859aff;
+    fill-opacity: 1;
+    stroke: white;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+  .coverage-label { opacity: 0; pointer-events: none; }
+  .coverage-label rect { fill: #101c42; stroke: #b8c8ff; }
+  .coverage-label text { fill: white; font-size: 21px; font-weight: 700; }
+  .coverage-county:focus-visible .coverage-label { opacity: 1; }
+  @media (hover: hover) {
+    .coverage-county:hover path { fill: #859aff; fill-opacity: .9; }
+    .coverage-svg:not(:has(.coverage-county:focus-visible)) .coverage-county:hover .coverage-label { opacity: 1; }
+  }
+</style>

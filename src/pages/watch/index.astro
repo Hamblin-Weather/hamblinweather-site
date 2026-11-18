@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Icon from '../../components/Icon.astro';
+import { path } from '../../lib/paths';
+import { nwsAlertsUrl } from '../../lib/weather';
+---
+<Base title="Weather Tools">
+  <div class="shell page-body">
+    <SectionHeading eyebrow="HAMBLIN WEATHER" title="West Tennessee Weather Tools" icon="forecast" text="Find your county forecast, check the radar, or see official watches and warnings."/>
+    <div class="official-links">
+      <a class="button button-primary" href={path('radar/')}><Icon name="radar" size={16}/> View Radar</a>
+      <a class="button button-outline" href={path('forecast/')}>Find your forecast <Icon name="arrow" size={16}/></a>
+      <a class="button button-outline" href={nwsAlertsUrl}>Official NWS alerts <Icon name="diagonal" size={16}/></a>
+    </div>
+  </div>
+</Base>

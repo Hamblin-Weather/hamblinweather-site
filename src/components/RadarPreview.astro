@@ -1,0 +1,185 @@
+---
+import Icon from './Icon.astro';
+import coverage from '../data/coverage.geo.json';
+import { path } from '../lib/paths';
+import { radarPreviewView, type Bounds } from '../lib/radar-preview-view';
+
+const radius = 6_378_137;
+const radians = Math.PI / 180;
+const project = ([lon, lat]: number[]) => [
+  radius * lon * radians,
+  radius * Math.log(Math.tan(Math.PI / 4 + lat * radians / 2)),
+];
+const outlines = coverage.features.map(({ geometry }) => {
+  const polygons = (geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates) as number[][][][];
+  return polygons.flatMap((polygon) => polygon.map((ring) => ring.map(project)));
+});
+const points = outlines.flat(2);
+const xs = points.map(([x]) => x);
+const ys = points.map(([, y]) => y);
+const bounds: Bounds = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+const initialView = radarPreviewView(bounds, 640, 208);
+const shape = (rings: number[][][]) => rings.map((ring) =>
+  'M' + ring.map(([x, y]) => x.toFixed(1) + ',' + (-y).toFixed(1)).join('L') + 'Z',
+).join('');
+---
+<a class="radar-promo" id="home-radar" href={path('radar/')} aria-labelledby="home-radar-title home-radar-action" aria-describedby="home-radar-status">
+  <div class="radar-preview" data-radar-preview={bounds.join(',')} aria-hidden="true">
+    <div data-layer="satellite"></div>
+    <div data-layer="radar"></div>
+    <svg viewBox={initialView.viewBox} preserveAspectRatio="none">
+      {outlines.map((rings) => <path d={shape(rings)}/>)}
+    </svg>
+  </div>
+  <div class="radar-promo-copy">
+    <h2 id="home-radar-title">Radar & Satellite</h2>
+    <p id="home-radar-status" role="status">
+      <span data-layer-status="radar">Radar unavailable</span>
+      <span data-layer-status="satellite">Satellite unavailable</span>
+    </p>
+    <span class="promo-link" id="home-radar-action">Open the Map Room <Icon name="arrow" size={17}/></span>
+  </div>
+</a>
+
+<script>
+  import { getRadarFrames, radarImageUrl } from '../lib/radar';
+  import { radarPreviewView, type Bounds } from '../lib/radar-preview-view';
+  import { getSatelliteTime, satelliteImageUrl } from '../lib/satellite';
+
+  async function decodeImage(url: string) {
+    const image = new Image();
+    image.alt = '';
+    image.src = url;
+    let timer: number | undefined;
+    try {
+      await Promise.race([
+        image.decode(),
+        new Promise<never>((_, reject) => { timer = window.setTimeout(reject, 12_000); }),
+      ]);
+      return image;
+    } catch (error) {
+      image.removeAttribute('src');
+      throw error;
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }
+
+  function startPreview(map: HTMLElement) {
+    const card = map.closest('a')!;
+    const bounds = map.dataset.radarPreview!.split(',').map(Number) as Bounds;
+    const outlines = map.querySelector('svg')!;
+    const satelliteTime = getSatelliteTime().catch(() => undefined);
+    const radarFrame = getRadarFrames().then((frames) => frames.at(-1)).catch(() => undefined);
+    const layers = [
+      {
+        name: 'Satellite',
+        slot: map.querySelector('[data-layer="satellite"]')!,
+        status: card.querySelector<HTMLElement>('[data-layer-status="satellite"]')!,
+        async url(view: ReturnType<typeof radarPreviewView>) {
+          const time = await satelliteTime;
+          return time === undefined ? undefined : satelliteImageUrl(view, time);
+        },
+      },
+      {
+        name: 'Radar',
+        slot: map.querySelector('[data-layer="radar"]')!,
+        status: card.querySelector<HTMLElement>('[data-layer-status="radar"]')!,
+        async url(view: ReturnType<typeof radarPreviewView>) {
+          const frame = await radarFrame;
+          return frame === undefined ? undefined : radarImageUrl(view, frame);
+        },
+      },
+    ];
+    let revision = 0;
+    let viewport = '';
+    let resizeTimer: number | undefined;
+
+    function render() {
+      const width = map.clientWidth;
+      const height = map.clientHeight;
+      const size = width + 'x' + height;
+      if (!width || !height || size === viewport) return;
+      viewport = size;
+      const current = ++revision;
+      const view = radarPreviewView(bounds, width, height);
+      outlines.setAttribute('viewBox', view.viewBox);
+      for (const layer of layers) {
+        layer.slot.replaceChildren();
+        layer.status.hidden = false;
+        layer.status.textContent = 'Loading ' + layer.name.toLowerCase() + '…';
+        void showLayer(layer, view, current);
+      }
+    }
+
+    async function showLayer(layer: typeof layers[number], view: ReturnType<typeof radarPreviewView>, current: number) {
+      try {
+        const url = await layer.url(view);
+        if (current !== revision) return;
+        if (url === undefined) throw new Error('No recent frame');
+        const image = await decodeImage(url);
+        if (current !== revision) return;
+        layer.slot.replaceChildren(image);
+        layer.status.hidden = true;
+      } catch {
+        if (current === revision) layer.status.textContent = layer.name + ' unavailable';
+      }
+    }
+
+    render();
+    new ResizeObserver(() => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(render, 120);
+    }).observe(map);
+  }
+
+  const map = document.querySelector<HTMLElement>('[data-radar-preview]');
+  if (map) startPreview(map);
+</script>
+
+<style>
+  .radar-promo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: 208px;
+    padding: var(--home-card-padding);
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #16284d;
+    color: #f3f6ff;
+    text-decoration: none;
+  }
+  .radar-promo:hover { color: white; }
+  .radar-promo:hover .promo-link { text-decoration: underline; }
+  .radar-preview { position: absolute; inset: 0; pointer-events: none; }
+  .radar-preview [data-layer], .radar-preview svg, .radar-preview::after {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .radar-preview [data-layer] :global(img) { display: block; width: 100%; height: 100%; }
+  .radar-preview::after {
+    content: '';
+    background: linear-gradient(90deg, #08162d 0%, #08162df2 26%, #08162dd9 43%, #08162d35 57%, transparent 70%);
+  }
+  .radar-preview svg { z-index: 1; }
+  .radar-preview path { fill: none; stroke: #f5f8ff; stroke-width: .9; stroke-opacity: .82; vector-effect: non-scaling-stroke; }
+  .radar-promo-copy { position: relative; z-index: 1; max-width: 50%; }
+  .radar-promo h2 { font-size: clamp(24px, 2.45vw, 34px); margin: 0 0 6px; }
+  .radar-promo [role="status"] { color: #e2eaff; font-size: .8rem; line-height: 1.35; }
+  .radar-promo [role="status"]:has(> span:not([hidden])) { margin-bottom: 6px; }
+  .radar-promo [role="status"] > span { display: block; }
+  @media (max-width: 760px) {
+    .radar-promo { min-height: 240px; }
+    .radar-promo h2 { font-size: clamp(22px, 5.8vw, 30px); }
+    .radar-promo .promo-link { font-size: .8125rem; gap: 5px; }
+    .radar-promo .promo-link :global(svg) { width: 14px; height: 14px; flex: none; }
+    .radar-preview::after {
+      background: linear-gradient(90deg, #08162d 0%, #08162df5 24%, #08162ddd 44%, #08162d25 59%, transparent 70%);
+    }
+  }
+</style>

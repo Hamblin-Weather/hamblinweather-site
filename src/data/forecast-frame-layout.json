@@ -1,0 +1,54 @@
+{
+  "regional": {
+    "bounds": [-91.153, 34.783, -87.169, 37.185],
+    "labels": [
+      ["Union City", 666, 270], ["Martin", 808, 296], ["Paris", 947, 283],
+      ["Dyersburg", 578, 365], ["Milan", 737, 396], ["McKenzie", 898, 403],
+      ["Ripley", 509, 462], ["Alamo", 669, 455], ["Brownsville", 621, 532],
+      ["Munford", 464, 551], ["Jackson", 769, 523], ["Memphis", 419, 665],
+      ["Somerville", 579, 660]
+    ]
+  },
+  "hometown": [
+    {
+      "id": "southwest", "title": "Memphis to Jackson",
+      "bounds": [-90.5, 34.895, -88.404, 36.159],
+      "labels": [
+        ["Three Way", 1041, 239], ["Jackson", 1070, 340], ["Medon", 1036, 438],
+        ["Brownsville", 788, 353], ["Stanton", 701, 435], ["Covington", 547, 353],
+        ["Brighton", 533, 421], ["Atoka", 479, 440], ["Munford", 426, 450],
+        ["Mason", 619, 447], ["Millington", 389, 517], ["Gallaway", 592, 521],
+        ["Arlington", 537, 540], ["Somerville", 733, 573], ["Bartlett", 414, 594],
+        ["Lakeland", 509, 601], ["Oakland", 629, 615], ["Memphis", 284, 635],
+        ["Germantown", 450, 676], ["Moscow", 700, 687], ["Piperton", 610, 695],
+        ["Collierville", 536, 700]
+      ]
+    },
+    {
+      "id": "northwest", "title": "Reelfoot Lake to Crockett County",
+      "bounds": [-90.65, 35.379, -88.089, 36.923],
+      "labels": [
+        ["Samburg", 685, 231], ["Union City", 842, 237], ["South Fulton", 977, 237],
+        ["Tiptonville", 620, 278], ["Hornbeak", 712, 302], ["Troy", 786, 299],
+        ["Ridgely", 612, 369], ["Trimble", 789, 372], ["Kenton", 866, 372],
+        ["Newbern", 733, 421], ["Dyersburg", 667, 462], ["Friendship", 743, 509],
+        ["Halls", 613, 521], ["Alamo", 820, 558], ["Gates", 656, 577],
+        ["Maury City", 752, 591], ["Ripley", 583, 595], ["Gadsden", 889, 602],
+        ["Bells", 827, 635], ["Henning", 585, 680]
+      ]
+    },
+    {
+      "id": "northeast", "title": "Gibson County to Kentucky Lake",
+      "bounds": [-89.51, 35.692, -87.684, 36.793],
+      "labels": [
+        ["Puryear", 859, 252], ["Cottage Grove", 753, 300], ["Martin", 482, 302],
+        ["Paris", 864, 355], ["Dresden", 586, 362], ["Sharon", 501, 397],
+        ["Gleason", 656, 420], ["Henry", 797, 428], ["Rutherford", 384, 441],
+        ["Greenfield", 518, 464], ["McKenzie", 724, 479], ["Dyer", 343, 541],
+        ["Bruceton", 924, 548], ["Bradford", 511, 562], ["Trezevant", 678, 566],
+        ["Huntingdon", 790, 575], ["Trenton", 416, 590], ["Atwood", 612, 594],
+        ["Milan", 549, 645], ["Clarksburg", 816, 671], ["Humboldt", 435, 707], ["Medina", 537, 720]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+---
+import { activities } from '../lib/outdoor-weather';
+import { defaultCounty } from '../lib/counties';
+import CountyOptions from './CountyOptions.astro';
+import Icon from './Icon.astro';
+
+const defaultLabel = defaultCounty.place + ' · ' + defaultCounty.name + ' County (default)';
+---
+<section class="outdoor" data-outdoor aria-labelledby="outdoor-heading">
+  <div class="outdoor-heading section-bar">
+    <h2 id="outdoor-heading">Outdoor Forecasts</h2>
+    <div class="outdoor-location">
+      <label class="field-label" for="forecast-location">Forecast location</label>
+      <select id="forecast-location">
+        <option value="">Default · {defaultCounty.place}</option>
+        <CountyOptions/>
+        <option value="device" hidden>Use my location</option>
+      </select>
+    </div>
+  </div>
+  <p class="outdoor-status muted" role="status" data-outdoor-status></p>
+  <div class="outdoor-grid">
+    {activities.map(({ id, title, icon }) => (
+      <article class="outdoor-card" data-outdoor-card={id} aria-labelledby={'outdoor-' + id + '-title'}>
+        <header class="outdoor-card-header">
+          <span class="outdoor-icon"><Icon name={icon} size={20}/></span>
+          <div>
+            <h3 id={'outdoor-' + id + '-title'}>{title}</h3>
+            <p data-point-name>{defaultLabel}</p>
+          </div>
+        </header>
+        <div id={'outdoor-' + id + '-details'} class="outdoor-details" aria-live="polite" aria-atomic="true">
+          <div class="outdoor-reading">
+            <div class="outdoor-score" data-gauge role="img" aria-label="Weather score unavailable">
+              <strong data-score>—</strong>
+              <span>/ 100</span>
+            </div>
+            <div class="outdoor-copy">
+              <p class="outdoor-rating" data-rating>Insufficient data</p>
+              <p data-explanation>Waiting for the hourly forecast.</p>
+              <p class="outdoor-window" data-window>Best 2-hour window · Insufficient data</p>
+            </div>
+          </div>
+          <p class="outdoor-factors" data-factors hidden></p>
+        </div>
+        <div class="outdoor-days" data-days hidden aria-label="Dated weather outlook">
+          {Array.from({ length: 7 }, (_, index) => (
+            <button type="button" data-day={index} aria-controls={'outdoor-' + id + '-details'} aria-pressed={index === 0 ? 'true' : 'false'}>
+              <span data-weekday></span><span data-date></span><strong data-day-score>—</strong>
+            </button>
+          ))}
+        </div>
+      </article>
+    ))}
+  </div>
+  <div class="outdoor-foot">
+    <details>
+      <summary>How the scores work</summary>
+      <p>Scores use National Weather Service hourly data. The best pair of consecutive hours scores as well as its weaker hour, with a deduction for changing wind in the Hunting Forecast. Only full remaining hours count today. Times are Central.</p>
+      <p>Each hour starts at 100. Subtract 1.5 per degree outside the preferred range (up to 38), 1.8 per mph above the steady wind threshold, and 2 per mph above the gust threshold. When gust data is missing, steady wind stands in. Each activity also deducts a share of the precipitation chance. When precipitation is in the forecast, the rain deduction uses at least 55%.</p>
+      <ul>
+        {activities.map((activity) => <li><strong>{activity.title}.</strong> {activity.description} Preferred temperature {activity.comfort.join('–')}°F. Wind and gust deductions begin above {activity.wind} and {activity.gust} mph. Rain weight {activity.rain}.</li>)}
+      </ul>
+      <p>A window needs a score of 65 or higher and a verified NWS alert check. Thunderstorms, freezing precipitation, dangerous temperatures, and relevant active alerts rule out overlapping windows. Drying potential is a weather estimate.</p>
+    </details>
+  </div>
+</section>
+
+<style>
+  .outdoor { margin-top: 30px; }
+  .outdoor-heading { display: flex; justify-content: space-between; align-items: end; gap: 10px 24px; flex-wrap: wrap; }
+  .outdoor-location { width: min(100%, 250px); }
+  .outdoor-status { font-size: .85rem; }
+  .outdoor-status:not(:empty) { margin: 0 0 10px; }
+  .outdoor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .outdoor-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    min-width: 0;
+    padding: clamp(13px, 1.5vw, 20px);
+    border: 1px solid #304977;
+    border-radius: 14px;
+    background: linear-gradient(112deg, #0b1933 36%, #1a3572);
+    color: #f5f8ff;
+  }
+  .outdoor-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 32%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .38;
+    background: repeating-radial-gradient(ellipse at 100% 0%, transparent 0 13px, #8cb0ff55 14px 15px, transparent 16px 29px);
+    mask-image: linear-gradient(110deg, transparent, #000);
+  }
+  .outdoor-card-header, .outdoor-reading { display: flex; align-items: center; gap: 11px; }
+  .outdoor-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 37px;
+    height: 37px;
+    color: #c0d5ff;
+    background: #20469b;
+    border: 1px solid #6380bf;
+    border-radius: 9px;
+  }
+  .outdoor-card h3 { font-size: clamp(18px, 2vw, 24px); letter-spacing: -.025em; }
+  [data-point-name] { color: #bcd1fa; font-size: .77rem; margin-top: 2px; }
+  .outdoor-details { min-width: 0; }
+  .outdoor-score {
+    --amount: 0%;
+    --indicator: #6fa6ff;
+    flex: 0 0 63px;
+    height: 63px;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    border-radius: 50%;
+    background: linear-gradient(#101f43, #101f43) padding-box,
+      conic-gradient(var(--indicator) var(--amount), #3d5685 0) border-box;
+    border: 3px solid transparent;
+    font-variant-numeric: tabular-nums;
+  }
+  .outdoor-score strong { font-family: var(--display); font-size: 1.37rem; line-height: 1; color: #fff; }
+  .outdoor-score span { color: #b8d1fc; font-size: .64rem; }
+  .outdoor-copy { min-width: 0; }
+  .outdoor-rating { color: #fff; font-weight: 780; font-size: .94rem; line-height: 1.28; }
+  [data-explanation], .outdoor-factors { color: #c7d7f5; font-size: .78rem; line-height: 1.4; }
+  [data-explanation] { margin-top: 2px; }
+  .outdoor-window { margin-top: 5px; color: #c8dcff; font-size: .78rem; font-weight: 740; line-height: 1.28; }
+  .outdoor-factors { margin-top: 5px; margin-left: 74px; }
+  .outdoor-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-self: end; gap: clamp(3px, .45vw, 6px); }
+  .outdoor-days button {
+    --day-ink: #eef4ff;
+    min-height: 60px;
+    min-width: 0;
+    display: grid;
+    place-content: center;
+    gap: 2px;
+    color: #d7e4fc;
+    background: #172c52;
+    border: 1px solid #3c5889;
+    border-radius: 7px;
+    padding: 4px 1px;
+    font-size: clamp(.62rem, 1.5vw, .76rem);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .outdoor-days button strong { color: var(--day-ink); font-size: .86rem; }
+  .outdoor-days button[data-tone="good"] { --day-ink: #9ff1cc; }
+  .outdoor-days button[data-tone="fair"] { --day-ink: #ffdf98; }
+  .outdoor-days button[data-tone="poor"] { --day-ink: #ffabb6; }
+  .outdoor-days button[data-tone="missing"] { --day-ink: #becbe3; }
+  .outdoor-days button:hover { background: #254376; }
+  .outdoor-days button[aria-pressed="true"] { background: #244eac; border-color: #a2bfff; }
+  .outdoor-days button:focus-visible { outline: 2px solid #e2ebff; outline-offset: 1px; }
+  .outdoor-foot { margin-top: 12px; font-size: .85rem; }
+  .outdoor-foot details { max-width: 75ch; color: var(--muted); }
+  .outdoor-foot summary { cursor: pointer; color: var(--ink); font-weight: 740; }
+  .outdoor-foot details p { margin-top: 8px; }
+  .outdoor-foot details li + li { margin-top: 4px; }
+  @media (max-width: 760px) {
+    .outdoor-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .outdoor-location { width: 100%; }
+  }
+</style>

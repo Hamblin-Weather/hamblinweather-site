@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsletterArt from '../../components/NewsletterArt.astro';
+
+const title = 'Hamblin Weather Weekly Newsletter';
+const description = 'Get a look at the week ahead across West Tennessee, with a day-by-day forecast, what could affect your plans, and a plain-English look at why the weather is changing. Written by meteorologist Noah Hamblin.';
+---
+<Base title={title} description={description} section="newsletter/">
+  <div class="shell page-body">
+    <section class="newsletter-page" aria-labelledby="newsletter-page-title">
+      <NewsletterArt/>
+      <div class="newsletter-copy">
+        <h1 id="newsletter-page-title">{title}</h1>
+        <p>{description}</p>
+        <div class="newsletter-actions">
+          <a class="button newsletter-subscribe" href="https://hamblinweather.beehiiv.com/">Subscribe to the Newsletter</a>
+          <a class="text-link newsletter-past" href="https://hamblinweather.beehiiv.com/p/hamblin-weather-newsletter-35f6">Read a Past Issue</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+<style>
+  .newsletter-page {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(24px, 4vw, 52px);
+    border-radius: 14px;
+    color: #f4f8ff;
+    background: radial-gradient(ellipse at 85% 55%, #235888, #122c56 46%, #08162d 86%);
+    --newsletter-art-opacity: .68;
+  }
+  .newsletter-copy { position: relative; max-width: min(68%, 740px); }
+  .newsletter-copy h1 { font-size: clamp(32px, 4.8vw, 62px); }
+  .newsletter-copy p { margin-top: 14px; color: #dce8fa; font-size: clamp(15px, 1.5vw, 17px); }
+  .newsletter-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 24px; }
+  .newsletter-subscribe { background: #e5f1ff; color: #112b57; white-space: normal; text-align: center; }
+  .newsletter-subscribe:hover { background: white; }
+  .newsletter-past { color: #e5f1ff; min-height: 44px; text-decoration: underline; }
+  .newsletter-past:hover { color: white; }
+  .newsletter-actions a:focus-visible { outline-color: #c1dfff; }
+  @media (max-width: 760px) {
+    .newsletter-page { --newsletter-art-opacity: .18; }
+    .newsletter-copy { max-width: 100%; }
+  }
+</style>

@@ -1,0 +1,8 @@
+---
+import Icon from './Icon.astro';
+
+const { size = 40 } = Astro.props;
+---
+{['forecast', 'sun', 'moon', 'cloud', 'rain', 'snow', 'storm'].map((name) => (
+  <span data-weather-icon={name} hidden={name !== 'forecast'}><Icon name={name} size={size}/></span>
+))}

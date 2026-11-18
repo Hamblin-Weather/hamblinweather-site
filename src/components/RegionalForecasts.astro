@@ -1,0 +1,46 @@
+---
+import ForecastMap from './ForecastMap.astro';
+import ExtendedForecast from './ExtendedForecast.astro';
+import layout from '../data/forecast-frame-layout.json';
+import { path } from '../lib/paths';
+---
+<div class="forecast-frames">
+  <div class="temperature-frames">
+    <section aria-labelledby="highs-heading">
+      <h2 id="highs-heading"><img src={path('brand/high-temperatures-heading.png')} width="932" height="506" alt="High Temperatures"/></h2>
+      <ForecastMap id="highs" title="High Temperatures"/>
+    </section>
+    <section aria-labelledby="lows-heading">
+      <h2 id="lows-heading"><img src={path('brand/low-temperatures-heading.png')} width="932" height="549" alt="Low Temperatures"/></h2>
+      <ForecastMap id="lows" title="Low Temperatures" night/>
+    </section>
+  </div>
+  <ExtendedForecast/>
+  <section aria-labelledby="hometown-heading">
+    <h2 id="hometown-heading"><img src={path('brand/hometown-forecasts-heading.png')} width="756" height="205" alt="Hometown Forecasts"/></h2>
+    <div class="hometown-frames">
+      {layout.hometown.map((group) => (
+        <ForecastMap id={group.id} title="Hometown Forecast" hometown={group}/>
+      ))}
+    </div>
+  </section>
+  <noscript><p class="soft-note">Enable JavaScript to load current forecast values.</p></noscript>
+</div>
+<style>
+  .forecast-frames { display: grid; gap: 28px; min-width: 0; }
+  .temperature-frames, .hometown-frames { display: grid; align-items: start; gap: 16px; }
+  .temperature-frames { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hometown-frames { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .forecast-frames h2 { margin-bottom: 8px; }
+  .forecast-frames h2 img { display: block; width: clamp(240px, 26vw, 270px); max-width: 100%; height: auto; }
+  .temperature-frames h2 img {
+    width: auto;
+    height: clamp(104px, 12vw, 138px);
+    margin-inline: auto;
+    object-fit: contain;
+  }
+  @media (max-width: 760px) {
+    .temperature-frames, .hometown-frames { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+<script>import '../lib/regional-forecasts';</script>

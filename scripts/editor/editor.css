@@ -1,0 +1,39 @@
+:root { font: 16px/1.5 system-ui, sans-serif; color: #111b38; background: #f1f4fc; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1120px; padding: clamp(18px, 4vw, 44px); margin: 0 auto; }
+h1, h2, h3, p { margin: 0; overflow-wrap: anywhere; }
+h1 { font-size: clamp(32px, 5vw, 50px); letter-spacing: -.045em; line-height: 1.14; margin: 5px 0 8px; }
+h2 { font-size: 19px; }
+.eyebrow { color: #142cc5; font-weight: 750; font-size: .78rem; letter-spacing: .06em; }
+.drafts { margin: 24px 0 14px; }
+.existing-updates { margin-bottom: 14px; }
+.editing { margin-bottom: 12px; font-weight: 720; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.panel { background: #fff; border: 1px solid #d0d9ef; border-radius: 14px; padding: clamp(14px, 2.4vw, 24px); }
+label { display: block; font-size: .875rem; font-weight: 720; margin: 0 0 4px; }
+input, textarea, select, button { font: inherit; color: inherit; }
+input, textarea, select { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid #aab8d9; border-radius: 6px; background: #fff; }
+textarea { resize: vertical; display: block; }
+form > input, form > textarea, .metadata { margin-bottom: 12px; }
+.metadata { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.controls, .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.controls select { width: min(310px, 100%); }
+.actions { margin-top: 14px; }
+button { cursor: pointer; padding: 7px 12px; border: 1px solid #aab8d9; border-radius: 7px; font-weight: 700; background: #fff; }
+button.primary { border-color: #1833de; background: #1833de; color: #fff; }
+button.danger { border-color: #b96c6c; color: #9b2525; }
+button:disabled { opacity: .55; cursor: default; }
+:focus-visible { outline: 3px solid #5a74eb; outline-offset: 2px; }
+.muted, .summary { color: #465777; }
+.muted { font-size: .84rem; }
+.preview article { border-top: 1px solid #d0d9ef; margin-top: 12px; padding-top: 17px; }
+.preview h3 { font-size: clamp(23px, 3vw, 34px); line-height: 1.15; letter-spacing: -.035em; margin: 7px 0 10px; }
+.preview #preview-body p { margin-top: 12px; }
+.message:not(:empty) { margin-top: 12px; overflow-wrap: anywhere; }
+.message[data-error] { color: #9b2525; }
+dialog { color: inherit; border: 1px solid #aab8d9; border-radius: 12px; max-width: 410px; padding: 22px; }
+dialog p { margin-top: 7px; }
+dialog::backdrop { background: #17234599; }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+@media (max-width: 900px) and (min-width: 761px), (max-width: 470px) { .metadata { grid-template-columns: 1fr; } }

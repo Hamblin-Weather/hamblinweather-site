@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+
+import { station } from '../data/station';
+import { counties } from '../lib/counties';
+import { path } from '../lib/paths';
+import { nwsAlertsUrl } from '../lib/weather';
+export function getStaticPaths() {
+  return [
+    { params: { station: 'about' }, props: { title: 'About Hamblin Weather', summary: 'Meet Noah Hamblin and explore the 14 West Tennessee counties he covers.' } },
+    { params: { station: 'advertise' }, props: { title: 'Advertise', summary: 'Sponsorship opportunities with Hamblin Weather forecasts, videos, and the weekly newsletter.' } },
+    { params: { station: 'privacy' }, props: { title: 'Privacy', icon: 'info', summary: 'How this site stores your county selection and connects to weather providers.' } },
+    { params: { station: 'support' }, props: { title: 'Support', icon: 'info', summary: 'Help with forecasts, map layers and your saved county.' } },
+  ];
+}
+const { title, icon, summary } = Astro.props;
+const route = Astro.params.station;
+const sponsorshipMail = 'mailto:' + station.sponsorshipEmail + '?subject=' + encodeURIComponent('Hamblin Weather Sponsorship Inquiry');
+---
+<Base title={title} description={summary} section={route + '/'}>
+  <div class="shell page-body">
+    {route === 'about' && <SectionHeading title={title}/>}
+    {route !== 'about' && route !== 'advertise' && <SectionHeading eyebrow="HAMBLIN WEATHER / THE STATION" title={title} icon={icon} text={summary}/>}
+    {route === 'about' && <div class="about-grid">
+      <section class="panel article-prose">
+        <h2>Meet Noah Hamblin</h2>
+        <p>Hey, I’m Noah Hamblin, the meteorologist behind Hamblin Weather! I’ve lived in West Tennessee my whole life and have been fascinated by weather since I was a kid. I graduated from UT Martin in 2026, where I studied meteorology. Sharing forecasts is how I get to do something with that lifelong interest for the communities I call home.</p>
+        <p>I started Hamblin Weather because I wanted people here to have a forecast that felt like it was made for them. When I look at a map, I see towns I know, roads I drive, and places where people are trying to get to work, make it to a ballgame, or decide what to do about storms coming in after dark. Those are the things I think about when I sit down to make a forecast.</p>
+        <p>I got started sharing daily forecasts on social media because that was already where a lot of people went to find out what was happening. I built this site to give those updates a home and make it easier to find your county forecast, check radar and satellite, or read an official alert right from your phone.</p>
+        <p>On a quiet day, I want to help you figure out whether you can get the yard mowed or keep your weekend plans. When storms are possible, I’ll tell you which towns I’m watching, when the weather could reach you, and what I’m still unsure about.</p>
+        <p>I’m excited to keep building Hamblin Weather, from better daily forecasts and graphics to more live coverage and an app built around the communities I cover. If you’ve ever shared a forecast with a neighbor, left a comment, or checked in before heading out the door, thank you. And if you’re just finding Hamblin Weather, I’m glad you’re here.</p>
+        <h2>The Hamblin Weather Coverage Area</h2>
+        <p>I focus on 14 West Tennessee counties so I can spend more time on details that matter here, like when rain may reach your town or whether storms could affect your drive home. On the <a href={path('blog/')}>Blog</a>, I’ll share what I’m watching and explain why the forecast may change.</p>
+        <ul class="coverage-list">{counties.map((county) => <li><a href={path('forecast/' + county.slug + '/')}>{county.name}</a></li>)}</ul>
+      </section>
+      <figure class="about-art"><img src={path('brand/hamblin-weather-broadcast.png')} width="1496" height="670" alt="Hamblin Weather"/></figure>
+    </div>}
+    {route === 'advertise' && <section class="panel sponsorship-pitch" aria-labelledby="sponsorship-heading">
+      <h1 id="sponsorship-heading">Put Your Business Alongside West Tennessee’s Local Weather Coverage.</h1>
+      <div class="article-prose">
+        <p>I’m Noah Hamblin, the meteorologist behind Hamblin Weather. I cover 14 West Tennessee counties with local forecasts, weather updates, and severe weather coverage.</p>
+        <p>If your business serves these communities, let’s talk about where it could fit. Sponsorship opportunities include forecast graphics, videos, and the newsletter. Tell me a little about your business and the towns you serve, and I’ll send you my sponsorship packet.</p>
+      </div>
+      <div class="sponsorship-contact">
+        <a class="button button-primary" href={sponsorshipMail}>Email Noah About Sponsorship</a>
+        <p><a href={sponsorshipMail}>{station.sponsorshipEmail}</a></p>
+      </div>
+    </section>}
+    {route === 'privacy' && <div class="panel article-prose narrow">
+      <h2>County Preference and Location</h2><p>When you choose or save a county, the site stores that preference in your browser. If you choose “Use my location” and allow browser access, your browser sends your coordinates rounded to two decimal places to the National Weather Service for a forecast near you. Your browser remembers your choice and can use your location automatically on future visits. You can change location permission or clear your preference in your browser settings. The site has no account sign-in, analytics or advertising trackers.</p>
+      <h2>Weather and Map Providers</h2><p>Your browser makes direct requests to the National Weather Service and NOAA for forecast, alert and map data. The Map Room also requests base map tiles from OpenStreetMap. These services receive standard connection information, including your IP address. Your county choice determines which forecast coordinates are requested.</p>
+      <h2>YouTube Videos</h2><p>The homepage loads video players from YouTube. YouTube receives standard connection information and may use cookies according to your browser and YouTube settings.</p>
+    </div>}
+    {route === 'support' && <div class="panel article-prose narrow">
+      <h2>Weather Data and Maps</h2><p>If a forecast or layer is unavailable, open the official provider link on the same page. The <a href={nwsAlertsUrl}>National Weather Service</a> publishes official alert details.</p>
+      <h2>Saved Counties</h2><p>Choose a different county on the homepage or use “Save this county” from any county forecast. Browser settings that disable local storage can prevent the site from remembering your choice.</p>
+      <h2>Contact</h2>{station.supportEmail ? <p><a href={'mailto:' + station.supportEmail}>Email Hamblin Weather support</a></p> : <p>A support email will appear here when it is available.</p>}
+    </div>}
+  </div>
+</Base>
+<style>
+  .sponsorship-pitch {
+    padding: clamp(24px, 4vw, 52px);
+    background: linear-gradient(115deg, #fff 25%, #e7f2ff);
+    border-color: #cddff2;
+  }
+  .sponsorship-pitch h1 { max-width: 840px; font-size: clamp(32px, 4.4vw, 58px); }
+  .sponsorship-pitch .article-prose { max-width: 690px; margin-top: 20px; }
+  .sponsorship-contact { margin-top: 24px; }
+  .sponsorship-contact .button { white-space: normal; text-align: center; }
+  .sponsorship-contact p { margin-top: 8px; overflow-wrap: anywhere; }
+</style>

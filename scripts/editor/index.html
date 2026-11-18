@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add Weather Update · Hamblin Weather</title>
+  <link rel="stylesheet" href="/editor.css">
+  <script src="/editor.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Hamblin Weather · Local editor</p>
+      <h1>Add Weather Update</h1>
+      <p>Write a blog post, forecast discussion, explainer, or station update for the website.</p>
+    </header>
+    <div class="drafts">
+      <label for="drafts">Saved drafts</label>
+      <div class="controls">
+        <select id="drafts"><option value="">Choose a saved draft</option></select>
+        <button id="load" type="button" disabled>Load draft</button>
+      </div>
+    </div>
+    <div class="existing-updates">
+      <label for="posts">Existing updates</label>
+      <div class="controls">
+        <select id="posts"><option value="">Choose an update</option></select>
+        <button id="edit" type="button" disabled>Edit update</button>
+        <button id="new-update" type="button" hidden>New update</button>
+      </div>
+    </div>
+    <div class="layout">
+      <form id="update" class="panel">
+        <p class="editing" id="editing" hidden></p>
+        <label for="title">Title</label><input id="title" name="title" maxlength="120" required>
+        <label for="description">Summary</label><textarea id="description" name="description" rows="2" maxlength="300" required></textarea>
+        <div class="metadata">
+          <div>
+            <label for="publication-date">Publication date</label>
+            <input id="publication-date" type="date" required>
+          </div>
+          <div>
+            <label for="publication-time">Time (Central)</label>
+            <input id="publication-time" type="time" required>
+          </div>
+          <div>
+            <label for="category">Category</label>
+            <select id="category" name="category"></select>
+          </div>
+        </div>
+        <label for="body">Body</label>
+        <textarea id="body" name="body" rows="10" maxlength="50000" aria-describedby="body-hint" required></textarea>
+        <p class="muted" id="body-hint">Use a blank line between paragraphs.</p>
+        <div class="actions">
+          <button id="save" type="button">Save draft</button>
+          <button id="add" type="submit" class="primary">Add to local site</button>
+          <button id="delete-update" type="button" class="danger" hidden>Delete update</button>
+        </div>
+        <p class="message" id="message" role="status"></p>
+      </form>
+      <section class="panel preview" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">Preview</h2>
+        <article>
+          <p class="eyebrow" id="preview-meta"></p>
+          <h3 id="preview-title">Your title</h3>
+          <p class="summary" id="preview-summary">Your summary will appear here.</p>
+          <div id="preview-body"><p>Your update will appear here.</p></div>
+        </article>
+      </section>
+    </div>
+  </main>
+  <dialog id="confirm" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">Add this update?</h2>
+    <p id="confirm-text">This creates a new post in your local website project. The live preview will pick it up automatically.</p>
+    <div class="actions">
+      <button id="cancel" type="button" autofocus>Keep editing</button>
+      <button id="confirm-add" type="button" class="primary">Add update</button>
+    </div>
+  </dialog>
+</body>
+</html>

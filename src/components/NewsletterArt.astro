@@ -1,0 +1,32 @@
+<svg class="newsletter-art" viewBox="0 0 440 190" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="newsletter-metal" x1="80" y1="160" x2="390" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#234780" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#4e95d4" stop-opacity=".3"/>
+    </linearGradient>
+    <clipPath id="newsletter-folds"><rect x="81" y="29" width="315" height="133" rx="12"/></clipPath>
+  </defs>
+  <g transform="rotate(-10 238 95)">
+    <rect x="81" y="29" width="315" height="133" rx="12" fill="url(#newsletter-metal)" stroke="#77baff" stroke-width="1.4"/>
+    <g clip-path="url(#newsletter-folds)" stroke="#88c3ff" stroke-width=".8" opacity=".27">
+      <path d="M121 165c38-62 73-89 135-85s77-42 149-52M140 168c41-57 76-76 129-73s74-39 135-46M159 172c47-58 77-62 128-63s69-34 123-39M176 180c55-51 83-52 125-55s61-30 113-35M193 185c48-40 87-41 127-45s56-25 100-30"/>
+    </g>
+    <path d="m85 35 137 77a33 33 0 0 0 33 0l137-77M85 156l107-61m200 61-107-61" stroke="#77baff" stroke-width="1.25" stroke-linejoin="round"/>
+    <rect x="73" y="21" width="331" height="149" rx="18" stroke="#4a8ad6" stroke-opacity=".35"/>
+  </g>
+</svg>
+<style>
+  .newsletter-art {
+    position: absolute;
+    top: 50%;
+    right: 1%;
+    width: clamp(275px, 34%, 430px);
+    height: auto;
+    transform: translateY(-50%);
+    opacity: var(--newsletter-art-opacity, 1);
+    pointer-events: none;
+  }
+  @media (max-width: 760px) {
+    .newsletter-art { right: -13px; width: 56%; min-width: 172px; }
+  }
+</style>

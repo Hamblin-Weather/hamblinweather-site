@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+import EditorialArticle from '../../components/EditorialArticle.astro';
+import { blogCategory } from '../../data/update-categories';
+
+export async function getStaticPaths() {
+  return (await getCollection('updates', ({ data }) => data.category === blogCategory))
+    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<EditorialArticle entry={entry} section="blog/"/>

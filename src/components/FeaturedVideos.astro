@@ -1,0 +1,57 @@
+---
+import { featuredPlaylists } from '../data/featured-videos';
+import { getForecastVideoFeed } from '../lib/forecast-video-feed';
+const forecastMetadata = await getForecastVideoFeed(featuredPlaylists[0].id);
+---
+<section class="featured-videos" aria-label="Featured videos">
+  {featuredPlaylists.map(({ id, key, label }) => (
+    <article class="featured-video" data-playlist={id} data-video-kind={key}
+      data-forecast-metadata={key === 'forecast' ? JSON.stringify(forecastMetadata) : undefined}
+      aria-labelledby={key + '-video-title'}>
+      <div class="video-header">
+        <div class="video-title">
+          <h2 id={key + '-video-title'}>{label}</h2>
+          {key === 'live' && <span class="live-badge" data-video-live role="status" hidden>Live</span>}
+        </div>
+        {key === 'forecast' && <div class="video-meta" data-forecast-headline hidden>
+          <p></p><time hidden></time>
+        </div>}
+      </div>
+      <div id={key + '-video-player'} class="featured-player" data-video-player></div>
+      <p class="video-status" data-video-status role="status" hidden></p>
+    </article>
+  ))}
+</section>
+<style>
+  .featured-videos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; margin-bottom: 25px; }
+  .featured-video { min-width: 0; padding: 12px 16px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
+  .featured-video h2 { font-size: clamp(17px, 2.2vw, 22px); }
+  .video-header { min-height: 52px; }
+  .video-title, .video-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+  .video-meta { margin-top: 5px; font-size: 14px; }
+  .video-meta p { color: var(--deep); font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+  .video-meta time { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 99px;
+    padding: 3px 8px;
+    background: #fce8eb;
+    color: #96213a;
+    font-size: 12px;
+    font-weight: 780;
+  }
+  .live-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .featured-player { margin-top: 11px; width: 100%; aspect-ratio: 16 / 9; min-height: 200px; border-radius: 8px; overflow: hidden; background: #0d1530; }
+  .featured-player :global(iframe) { width: 100%; height: 100%; border: 0; display: block; }
+  .video-status { color: var(--muted); font-size: 13px; margin-top: 7px; }
+  .featured-player:has(> .video-status) { display: grid; place-items: center; padding: 16px; }
+  .featured-player > .video-status { margin: 0; color: var(--white); text-align: center; }
+  @media (max-width: 680px) {
+    .featured-videos { grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
+    .featured-video { padding: 9px 12px; }
+    .video-header { min-height: 0; }
+  }
+</style>
+<script>import '../lib/featured-videos';</script>

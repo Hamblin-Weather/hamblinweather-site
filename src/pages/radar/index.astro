@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import CountyOptions from '../../components/CountyOptions.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import { path } from '../../lib/paths';
+import { nwsAlertsUrl } from '../../lib/weather';
+const layers = [['radar', 'Radar'], ['satellite', 'Satellite'], ['outlook', 'SPC outlook']];
+---
+<Base title="Radar & Map Room" section="radar/">
+  <div class="shell page-body">
+    <SectionHeading title="Radar & Maps"/>
+    <div class="map-frame panel">
+      <div class="map-tools">
+        <fieldset class="layer-controls">
+          <legend class="field-label">Weather layer</legend>
+          {layers.map(([value, label]) => <label><input type="radio" name="map-layer" value={value} checked={value === 'radar'}/><span>{label}</span></label>)}
+        </fieldset>
+        <label class="alert-overlay-control" id="alert-overlay-control"><input id="alert-overlay-toggle" type="checkbox" checked/> Alert polygons</label>
+        <div class="map-county"><label class="field-label" for="map-county">Zoom to county</label><select id="map-county"><CountyOptions blank="Coverage area"/></select></div>
+      </div>
+      <div class="map-viewport">
+        <div id="weather-map" aria-label="Interactive West Tennessee weather map. Use the county selector to move the map." role="region"></div>
+        <p id="radar-notice" role="status" hidden></p>
+      </div>
+      <div class="map-readout">
+        <div id="radar-controls" class="radar-controls">
+          <button id="radar-play" class="button button-outline" type="button" disabled><Icon name="play" size={16}/><span>Play</span></button>
+          <div><label class="field-label" for="radar-frame">Radar frame</label><input type="range" id="radar-frame" min="0" max="0" value="0" disabled/></div>
+          <output id="radar-time" for="radar-frame">Awaiting radar frames</output>
+        </div>
+        <p class="map-status" id="map-status" role="status">Loading map and weather layers…</p>
+        <p id="basemap-status" class="muted" hidden>Some base map tiles are unavailable. County outlines and weather layers can still load.</p>
+        <div data-legend="radar" class="map-legend"><span>Reflectivity (dBZ)</span><span class="radar-scale" aria-hidden="true"></span><span>Weaker → stronger returns</span></div>
+        <div class="radar-alerts" id="alert-overlay-readout">
+          <p id="alert-overlay-status" role="status">Checking official alert polygons…</p>
+          <div class="map-legend"><span><i class="legend-chip legend-warning"></i>Warning</span><span><i class="legend-chip legend-watch"></i>Watch</span><span><i class="legend-chip legend-other"></i>Other alert</span></div>
+        </div>
+        <div data-legend="satellite" class="map-legend" hidden><span class="ir-scale" aria-hidden="true"></span><span>Infrared imagery · Darker is generally warmer, lighter is cooler.</span></div>
+        <div data-legend="outlook" class="map-legend outlook-legend" hidden>
+          {[[2, 'Thunder'], [3, 'Marginal'], [4, 'Slight'], [5, 'Enhanced'], [6, 'Moderate'], [8, 'High']].map(([value, label]) => <span><i class={'risk risk-' + value}></i>{label}</span>)}
+        </div>
+        <div class="map-sources"><a id="map-official" href="https://radar.weather.gov/">Official NOAA radar ↗</a><a href={nwsAlertsUrl}>Official NWS alerts</a><a href={path('forecast/')}>County forecast text</a></div>
+      </div>
+      <noscript><p class="map-noscript">For weather layers, use the official links on this page.</p></noscript>
+    </div>
+  </div>
+</Base>
+<script>import '../../lib/map-room';</script>

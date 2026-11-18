@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { blogCategory } from '../data/update-categories';
+import { editorialDate, editorialTimestamp } from '../lib/editorial';
+import { path } from '../lib/paths';
+import Icon from './Icon.astro';
+import SectionHeading from './SectionHeading.astro';
+
+const entries = (await getCollection('updates', ({ data }) => data.category === blogCategory))
+  .sort((a, b) => editorialTimestamp(b.data).localeCompare(editorialTimestamp(a.data)));
+---
+<Base title="Blog" section="blog/">
+  <div class="shell page-body">
+    <SectionHeading title="Blog"/>
+    <div class="editorial-index">
+      {entries.map((entry) => {
+        const href = path('blog/' + entry.id + '/');
+        return <article class="panel editorial-row">
+          <p class="eyebrow">
+            <time datetime={editorialTimestamp(entry.data)}>{editorialDate(entry.data.published, entry.data.publishedTime)}</time>
+          </p>
+          <h2><a href={href}>{entry.data.title}</a></h2>
+          <p>{entry.data.description}</p>
+          <a class="text-link" href={href} aria-label={'Read ' + entry.data.title}>Read post <Icon name="arrow" size={17}/></a>
+        </article>;
+      })}
+      {!entries.length && <div class="panel empty">No blog posts yet.</div>}
+    </div>
+  </div>
+</Base>

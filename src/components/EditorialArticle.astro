@@ -1,0 +1,25 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { editorialDate, editorialTimestamp } from '../lib/editorial';
+import { path } from '../lib/paths';
+import { nwsAlertsUrl } from '../lib/weather';
+import Icon from './Icon.astro';
+
+interface Props { entry: CollectionEntry<'updates'>; section: 'blog/' | 'updates/' }
+const { entry, section } = Astro.props;
+const { Content } = await render(entry);
+---
+<Base title={entry.data.title} section={section} description={entry.data.description}>
+  <div class="shell page-body">
+    <a class="breadcrumb" href={path(section === 'blog/' ? section : '')}>← {section === 'blog/' ? 'All blog posts' : 'Home'}</a>
+    <article class="article">
+      <header>
+        <p class="eyebrow"><Icon name="journal" size={16}/> {entry.data.category} <span class="accent-dot"></span> <time datetime={editorialTimestamp(entry.data)}>{editorialDate(entry.data.published, entry.data.publishedTime)}</time></p>
+        <h1>{entry.data.title}</h1><p class="lede">{entry.data.description}</p>
+      </header>
+      <div class="article-prose"><Content/></div>
+      <div class="official-links"><a class="text-link" href={path('forecast/')}>County forecasts <Icon name="arrow" size={17}/></a><a class="text-link" href={nwsAlertsUrl}>Official NWS alerts <Icon name="diagonal" size={17}/></a></div>
+    </article>
+  </div>
+</Base>

@@ -1,0 +1,101 @@
+---
+import Icon from './Icon.astro';
+import NewsletterArt from './NewsletterArt.astro';
+import RadarPreview from './RadarPreview.astro';
+import { path } from '../lib/paths';
+---
+<div class="home-features" id="home-features">
+  <section class="home-lower" aria-label="Map Room">
+    <RadarPreview/>
+  </section>
+
+  <div class="about-strip">
+    <section class="feature-card about-note" aria-labelledby="home-about-title">
+      <img class="about-landscape" src={path('brand/about-countryside.webp')} alt="" loading="lazy" decoding="async"/>
+      <div class="feature-copy">
+        <h2 id="home-about-title">Local Weather with Noah Hamblin</h2>
+        <a class="text-link feature-action" href={path('about/')}>About Hamblin Weather <Icon name="arrow" size={17}/></a>
+      </div>
+    </section>
+    <section class="feature-card sponsor-note" aria-labelledby="home-sponsor-title">
+      <span class="signal-art" aria-hidden="true"></span>
+      <div class="feature-copy">
+        <h2 id="home-sponsor-title">Local Sponsorship</h2>
+        <a class="text-link feature-action" href={path('advertise/')}>Advertise <Icon name="arrow" size={17}/></a>
+      </div>
+    </section>
+  </div>
+
+  <a class="feature-card newsletter-banner" id="newsletter" href={path('newsletter/')} aria-labelledby="newsletter-title">
+    <NewsletterArt/>
+    <div class="feature-copy">
+      <h2 id="newsletter-title">Hamblin Weather Newsletter <Icon name="arrow" size={20}/></h2>
+      <p>West Tennessee forecasts and weather updates in your inbox.</p>
+    </div>
+  </a>
+</div>
+
+<style>
+  .home-features { display: grid; gap: 16px; scroll-margin-top: 16px; }
+  .about-strip { display: grid; grid-template-columns: var(--home-columns); gap: 16px; }
+  .feature-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 208px;
+    display: flex;
+    align-items: center;
+    padding: var(--home-card-padding);
+    border-radius: 14px;
+    background: var(--deep);
+    color: #f3f6ff;
+  }
+  .feature-copy { position: relative; z-index: 1; max-width: 62%; }
+  .feature-card h2 { font-size: clamp(24px, 2.45vw, 34px); }
+  .feature-copy p { margin-top: 8px; color: #dbe7fa; font-size: 14px; line-height: 1.5; }
+  .feature-action { margin-top: 13px; color: inherit; }
+  .newsletter-banner:hover h2 { text-decoration: underline; }
+  .about-note::after, .newsletter-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, #08162d 0%, #08162de8 29%, #08162d80 60%, transparent 82%);
+  }
+  .about-landscape { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 77%; }
+
+  .about-note { background: radial-gradient(ellipse at 82% 44%, #295086, #102a52 46%, #08162d 78%); }
+  .sponsor-note { background: linear-gradient(105deg, #08162d 0%, #10274d 58%, #193e6b 100%); }
+  .signal-art {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 61%;
+    pointer-events: none;
+    background:
+      repeating-radial-gradient(circle at 103% 52%, transparent 0 28px, #95c3ff70 29px 30px, transparent 31px 34px),
+      linear-gradient(#a2c6ff24 1px, transparent 1px),
+      linear-gradient(90deg, #a2c6ff24 1px, transparent 1px),
+      radial-gradient(ellipse at 100% 52%, #3b8de27a, transparent 67%);
+    background-size: auto, 23px 23px, 23px 23px, auto;
+    mask-image: linear-gradient(90deg, transparent, #000 58%);
+  }
+
+  .newsletter-banner {
+    min-height: 112px;
+    scroll-margin-top: 16px;
+    text-decoration: none;
+    background: radial-gradient(ellipse at 86% 51%, #215386, #122b55 49%, #08162d 90%);
+  }
+  .newsletter-banner:hover { color: white; }
+  .newsletter-banner p { margin-top: 5px; }
+
+  @media (max-width: 760px) {
+    .feature-card h2 { font-size: clamp(22px, 5.8vw, 30px); }
+    .feature-copy { max-width: 64%; }
+    .about-note { min-height: 223px; }
+    .sponsor-note { min-height: 184px; }
+    .signal-art { width: 56%; background-position: 12px 0, 0 0, 0 0, 0 0; }
+    .newsletter-banner { min-height: 146px; }
+  }
+</style>

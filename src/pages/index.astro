@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import CountyOptions from '../components/CountyOptions.astro';
+import CoverageArt from '../components/CoverageArt.astro';
+import FeaturedVideos from '../components/FeaturedVideos.astro';
+import HomeFeatures from '../components/HomeFeatures.astro';
+import { defaultCounty } from '../lib/counties';
+import { path } from '../lib/paths';
+---
+<Base title="Home">
+  <section slot="hero" class="broadcast-hero" aria-labelledby="home-title">
+    <picture class="hero-backdrop" aria-hidden="true">
+      <source media="(max-width: 760px)" srcset={path('brand/broadcast-backdrop-mobile.webp')}/>
+      <img src={path('brand/broadcast-backdrop.webp')} width="1440" height="960" alt="" fetchpriority="high"/>
+    </picture>
+    <div class="shell hero-inner">
+      <div class="hero-copy">
+        <h1 id="home-title">Local Weather for <span>West Tennessee</span></h1>
+      </div>
+      <div class="hero-coverage">
+        <CoverageArt/>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell home-desk">
+    <FeaturedVideos/>
+    <section class="weather-section" aria-labelledby="current-weather">
+      <div class="section-bar">
+        <h2 id="current-weather">Current Weather & Forecast</h2>
+      </div>
+      <section class="panel local-panel" aria-labelledby="home-location">
+        <h3 class="local-heading" id="home-location" aria-live="polite">{defaultCounty.place} · {defaultCounty.name} County</h3>
+        <form id="home-county-form" class="home-finder" action={path('forecast/')}>
+          <div class="finder-row">
+            <div class="home-county-control">
+              <label class="field-label" for="home-county">Select a West Tennessee county</label>
+              <div class="select-with-icon"><Icon name="pin" size={17}/><select id="home-county"><option value="" disabled hidden>My location</option><CountyOptions selected={defaultCounty.slug}/></select></div>
+            </div>
+            <button class="button button-outline" type="submit"><span id="home-forecast-action">Get forecast</span> <Icon name="arrow" size={16}/></button>
+            <button class="button button-outline" id="use-home-location" type="button" hidden><Icon name="pin" size={16}/> Use my location</button>
+          </div>
+          <p id="home-location-status" class="home-location-status" role="status"></p>
+        </form>
+        <div class="weather-readouts">
+          <div class="weather-reading observed-reading" role="status">
+            <div class="reading-copy">
+              <p class="small-label">Current conditions</p>
+              <strong class="reading-temperature" id="home-observed-value">—</strong>
+              <p class="reading-description" id="home-observed-summary">Loading station observation…</p>
+              <p class="reading-source" id="home-observed-details" hidden></p>
+            </div>
+            <img id="home-observed-icon" class="reading-icon" alt="" hidden/>
+          </div>
+          <div class="weather-reading forecast-reading" id="home-forecast-reading">
+            <img class="reading-sky" src={path('brand/forecast-cirrus.webp')} alt="" loading="lazy" decoding="async"/>
+            <div class="reading-copy" role="status">
+              <p class="small-label" id="home-forecast-period">Forecast</p>
+              <strong class="reading-temperature" id="home-weather-value">—</strong>
+              <p class="reading-description" id="home-weather-summary">Loading local forecast…</p>
+            </div>
+            <img id="home-forecast-icon" class="reading-icon" alt="" hidden/>
+            <a class="reading-link" href={path('forecast/#extended-title')}>See the 7-day forecast</a>
+          </div>
+        </div>
+        <noscript><p>Find local weather in <a href={path('forecast/')}>the county directory</a>.</p></noscript>
+      </section>
+    </section>
+
+    <HomeFeatures/>
+  </div>
+</Base>
+<script>import '../lib/home';</script>
+
+<style>
+  .weather-section { margin-bottom: 24px; }
+  .home-finder { margin-top: 13px; }
+  .finder-row { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; }
+  .home-county-control { flex: 1 1 13rem; min-width: 0; }
+  .finder-row .button { min-height: 46px; }
+  .home-location-status { color: var(--muted); font-size: 13px; }
+  .home-location-status:not(:empty) { margin-top: 6px; }
+
+  .weather-readouts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 13px; }
+  .weather-reading {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 164px;
+    padding: clamp(13px, 1.5vw, 20px);
+    border: 1px solid #d2e1f4;
+    border-radius: 12px;
+  }
+  .reading-copy { align-self: start; }
+  .reading-temperature {
+    display: block;
+    margin-top: 4px;
+    font: 850 clamp(40px, 4.5vw, 66px) / 1 var(--display);
+    letter-spacing: -.06em;
+    font-variant-numeric: tabular-nums;
+  }
+  .reading-description { font-size: 14px; font-weight: 720; line-height: 1.4; margin-top: 5px; }
+  .reading-source { font-size: 12px; line-height: 1.45; margin-top: 4px; }
+  .reading-icon {
+    width: clamp(68px, 8vw, 106px);
+    height: clamp(62px, 7vw, 90px);
+    object-fit: contain;
+    margin-inline: 8px;
+    filter: drop-shadow(0 3px 5px #09182d48);
+  }
+  .observed-reading {
+    color: #f3f8ff;
+    border-color: #254878;
+    background: radial-gradient(ellipse at 88% 37%, #244d9c 0%, #142c57 37%, #0b1933 78%);
+  }
+  .observed-reading .small-label, .observed-reading .reading-source { color: #c8e0ff; }
+  .forecast-reading { color: #102b56; background: linear-gradient(112deg, #e2edfa 24%, #a8c5e6); }
+  .forecast-reading .small-label { color: #254f8a; }
+  .reading-link {
+    grid-column: 1 / -1;
+    justify-self: start;
+    align-self: end;
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    color: inherit;
+    font-size: 13px;
+    font-weight: 740;
+  }
+  .reading-link:hover { color: inherit; text-decoration-thickness: 2px; }
+  .forecast-reading[data-night] .reading-link:focus-visible { outline-color: #d8e6ff; }
+  .forecast-reading[data-night] {
+    color: #f4f7ff;
+    border-color: #384c77;
+    background:
+      radial-gradient(circle at 63% 26%, #e6f0fdb0 0 1px, transparent 1.7px),
+      radial-gradient(circle at 91% 20%, #e6f0fd90 0 1px, transparent 1.7px),
+      radial-gradient(ellipse at 94% 125%, #8a789d, transparent 58%),
+      linear-gradient(112deg, #182c55 25%, #465e8b);
+  }
+  .forecast-reading[data-night] .small-label { color: #d8e6ff; }
+  .forecast-reading[data-night] .reading-sky { display: none; }
+  .forecast-reading[data-night]::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 18%;
+    right: 22%;
+    width: 38px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #e9f0ff;
+    mask-image: radial-gradient(circle at 69% 31%, transparent 0 51%, #000 54%);
+    pointer-events: none;
+  }
+  .reading-sky {
+    position: absolute;
+    z-index: -1;
+    inset: 0 0 0 auto;
+    width: 73%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right 56%;
+    opacity: .36;
+    mask-image: linear-gradient(90deg, transparent, #000);
+  }
+
+  @media (max-width: 760px) {
+    .home-county-control { flex-basis: 100%; }
+    .finder-row .button { flex: 1 1 auto; }
+    .weather-readouts { grid-template-columns: 1fr; gap: 8px; }
+    .weather-reading { min-height: 135px; }
+    .reading-icon { width: 76px; height: 66px; }
+    .forecast-reading[data-night]::after { right: 30%; width: 31px; }
+  }
+</style>

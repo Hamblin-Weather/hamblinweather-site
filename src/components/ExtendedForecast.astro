@@ -1,0 +1,68 @@
+---
+import { path } from '../lib/paths';
+---
+<section class="extended-forecast" aria-labelledby="extended-title" data-extended-forecast>
+  <div class="section-bar extended-heading">
+    <h2 id="extended-title"><img class="plan-ahead-heading" src={path('brand/plan-ahead-heading.png')} width="975" height="331" alt="Plan Ahead — 7-Day Forecast"/></h2>
+    <p class="extended-location" data-extended-location></p>
+  </div>
+  <p role="status" data-extended-status>Extended forecast unavailable.</p>
+  <figure hidden data-extended-content>
+    <div class="extended-board" style={`--board-art: url('${path('brand/extended/board.webp')}')`} data-badge-root={path('brand/extended/')}>
+      <p class="extended-range" data-extended-range></p>
+      <ol class="extended-days" aria-label="Seven-day forecast">
+        {Array.from({ length: 7 }, () => (
+          <li class="extended-day">
+            <img class="extended-badge" alt="" width="184" height="76"/>
+            <time class="extended-date"></time>
+            <p class="extended-high"><span class="extended-metric">High </span><strong data-high><span data-number></span><span class="extended-unit"></span></strong></p>
+            <img class="extended-icon" alt="" hidden/>
+            <p class="extended-conditions"></p>
+            <p class="extended-low"><span class="extended-metric">Low </span><strong data-low><span data-number></span><span class="extended-unit"></span></strong><span class="extended-low-pending">Night low pending</span></p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </figure>
+</section>
+
+<style>
+  .extended-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .extended-heading h2 { margin: 0; }
+  .plan-ahead-heading { display: block; width: clamp(88px, 13vw, 128px); height: auto; }
+  .extended-location, [data-extended-status] { color: var(--muted); font-size: .875rem; }
+  .extended-location:empty { display: none; }
+  .extended-board { container-type: inline-size; aspect-ratio: 16 / 9; position: relative; background: #192961 var(--board-art) center / cover no-repeat; color: white; }
+  .extended-range { position: absolute; top: 10%; left: 23%; color: #08192d; font-weight: 850; font-size: 1.65cqw; }
+  .extended-days { list-style: none; position: absolute; inset: 17.9% 1.15% 9% .78%; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .39cqw; margin: 0; padding: 0; }
+  .extended-day { position: relative; text-align: center; }
+  .extended-badge { position: absolute; top: 2.6%; left: 8%; width: 84%; height: auto; }
+  .extended-high, .extended-low { position: absolute; line-height: 1; font-family: var(--display); letter-spacing: -.07em; paint-order: stroke fill; -webkit-text-stroke: .48cqw #000; }
+  .extended-high { top: 17%; width: 100%; font-size: 7.4cqw; }
+  .extended-high:has([data-wide]) { font-size: 5.7cqw; }
+  .extended-low { bottom: 1.9%; right: 8%; font-size: 4.7cqw; }
+  .extended-low-pending { display: none; }
+  .extended-low:has([data-missing]) { right: 6%; left: 6%; color: #f1f5ff; font-size: clamp(10px, 1.28cqw, 16px); font-weight: 750; letter-spacing: 0; -webkit-text-stroke: 0; }
+  .extended-low [data-missing], .extended-low:has([data-missing]) .extended-metric { display: none; }
+  .extended-low:has([data-missing]) .extended-low-pending { display: inline; }
+  .extended-high strong, .extended-low strong { font-weight: 900; }
+  .extended-icon { position: absolute; top: 36%; left: 7%; width: 86%; height: 26%; object-fit: contain; }
+  .extended-conditions { position: absolute; top: 64%; inset-inline: 6%; font-size: 1.85cqw; line-height: 1.14; font-weight: 750; overflow-wrap: break-word; }
+  .extended-conditions[data-long] { font-size: 1.38cqw; }
+  .extended-date, .extended-metric, .extended-unit { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @media (max-width: 760px) {
+    .extended-board { aspect-ratio: auto; background: none; color: var(--ink); }
+    .extended-range { position: static; font-size: .94rem; margin-bottom: 8px; }
+    .extended-days { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .extended-day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 8px; border-radius: 9px; background: #172857; color: white; }
+    .extended-badge { position: static; width: min(100%, 86px); }
+    .extended-date { position: static; width: auto; height: auto; clip-path: none; color: #d8dfff; font-size: .81rem; }
+    .extended-high, .extended-high:has([data-wide]), .extended-low { position: static; -webkit-text-stroke: 0; font-size: 1rem; letter-spacing: 0; }
+    .extended-metric { position: static; width: auto; height: auto; clip-path: none; }
+    .extended-high strong { font-size: 1.65rem; }
+    .extended-low:has([data-missing]) { font-size: .82rem; }
+    .extended-icon { position: static; width: 58px; height: 48px; }
+    .extended-conditions, .extended-conditions[data-long] { position: static; font-size: .875rem; margin-bottom: auto; }
+  }
+</style>
+<script>import '../lib/forecast-page-board';</script>

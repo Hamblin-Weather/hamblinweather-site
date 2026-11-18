@@ -1,0 +1,111 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/manrope';
+import '../styles/site.css';
+import Icon from '../components/Icon.astro';
+import { station } from '../data/station';
+import { path } from '../lib/paths';
+
+interface Props { title: string; description?: string; section?: string }
+const { title, description = 'Local forecasts, radar, and official weather alerts for 14 West Tennessee counties.', section } = Astro.props;
+const active = section ?? (title === 'Home' ? '' : undefined);
+const nav = [
+  ['Home', ''], ['Forecasts', 'forecast/'], ['Radar & Satellite', 'radar/'],
+  ['Newsletter', 'newsletter/'],
+  ['Blog', 'blog/'], ['About', 'about/'],
+];
+const socialLinks = [
+  { platform: 'Instagram', icon: 'instagram', href: 'https://www.instagram.com/hamblinwx/' },
+  { platform: 'Facebook', icon: 'facebook', href: 'https://www.facebook.com/profile.php?id=61584568363249' },
+  { platform: 'TikTok', icon: 'tiktok', href: 'https://www.tiktok.com/@hamblin_wx?is_from_webapp=1&sender_device=pc' },
+  { platform: 'YouTube', icon: 'youtube', href: 'https://youtube.com/@hamblinweather?si=hE3LXY9YieT3v8yg' },
+];
+const logo = path('brand/hamblin-weather.png');
+const pageTitle = title === 'Home' ? 'Hamblin Weather | West Tennessee' : title + ' | Hamblin Weather';
+const socialImage = new URL(path('brand/hamblin-weather-social.png'), Astro.site ?? Astro.url);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content={description}/>
+    <meta name="theme-color" content="#101c42"/>
+    <link rel="icon" type="image/png" href={path('brand/favicon.png')}/>
+    <meta property="og:title" content={pageTitle}/>
+    <meta property="og:description" content={description}/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content={socialImage.href}/>
+    <meta property="og:image:alt" content="Hamblin Weather wordmark on white"/>
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href={path()} aria-label="Hamblin Weather home">
+          <img src={logo} width="1835" height="823" alt=""/>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav"><Icon name="menu" size={20}/> Menu</button>
+        <nav id="main-nav" aria-label="Primary">
+          {nav.map(([label, href]) => <a href={path(href)} aria-current={active === href ? 'page' : undefined}>{label}</a>)}
+        </nav>
+      </div>
+      <noscript><style>
+        @media (max-width: 1020px) {
+          .menu-toggle { display: none; }
+          #main-nav { display: flex; }
+        }
+      </style></noscript>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot name="hero"/>
+      <slot/>
+    </main>
+    <footer class="site-footer">
+      <div class="shell">
+        <div class="footer-main">
+          <div class="footer-identity">
+            <div>
+              <a class="brand" href={path()} aria-label="Hamblin Weather home"><img src={logo} width="1835" height="823" alt=""/></a>
+              <p><strong>Clear, Unbiased, No Hype Local Weather for West Tennessee</strong></p>
+            </div>
+            <div class="footer-contact">
+              <h2>Contact Hamblin Weather</h2>
+              <a href={'mailto:' + station.contactEmail}>{station.contactEmail}</a>
+            </div>
+          </div>
+          <nav aria-label="Station">
+            <a href={path('about/')}>About</a><a href={path('advertise/')}>Advertise</a><a href={path('support/')}>Support</a><a href={path('privacy/')}>Privacy</a>
+          </nav>
+        </div>
+        <nav class="footer-social" aria-labelledby="footer-social-label">
+          <p id="footer-social-label">Follow Hamblin Weather</p>
+          <ul>
+            {socialLinks.map(({ platform, icon, href }) => <li>
+              <a href={href} target="_blank" rel="noopener noreferrer" aria-label={'Hamblin Weather on ' + platform + ' (opens in a new tab)'}>
+                <img src={path('brand/social/' + icon + '.png')} width="26" height="26" alt="" loading="lazy" decoding="async"/>
+              </a>
+            </li>)}
+          </ul>
+        </nav>
+        <div class="footer-small"><span>Hamblin Weather · West Tennessee</span><span>Weather data from the National Weather Service. Station times are Central.</span></div>
+      </div>
+    </footer>
+    <script>
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
+      const nav = document.querySelector<HTMLElement>('#main-nav')!;
+      toggle.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(open));
+        nav.classList.toggle('is-open', open);
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && nav.classList.contains('is-open') && toggle.getClientRects().length) {
+          toggle.click();
+          toggle.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

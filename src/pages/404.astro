@@ -1,0 +1,8 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { path } from '../lib/paths';
+---
+<Base title="Page Not Found">
+  <div class="shell page-body"><SectionHeading eyebrow="404 / HAMBLIN WEATHER" title="Page Not Found" text="Use the weather desk or county directory to get back on track."/><div class="official-links"><a class="button button-primary" href={path()}>Back to the weather desk</a><a class="button button-outline" href={path('forecast/')}>County forecasts</a></div></div>
+</Base>
