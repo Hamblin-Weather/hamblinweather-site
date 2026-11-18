@@ -1,0 +1,1 @@
+var e=`hamblin-weather-nws-location`;function t(){return new Promise((e,t)=>{navigator.geolocation.getCurrentPosition(e,t,{timeout:1e4})})}function n({latitude:e,longitude:t}){return{lat:Number(e.toFixed(2)),lon:Number(t.toFixed(2))}}export{n,t as r,e as t};

@@ -1,0 +1,1 @@
+function e(e,t=!0){return/thunder/i.test(e)?`thunderstorm`:/snow|sleet|flurr|freezing/i.test(e)?``:/rain|shower|drizzle/i.test(e)?`rain`:t&&/partly (?:cloudy|sunny)|mostly (?:sunny|clear)/i.test(e)?`partly_cloudy`:/cloud|overcast|fog|haze/i.test(e)?`cloudy`:t&&/clear|sunny|\bfair\b/i.test(e)?`sunny`:``}export{e as t};
